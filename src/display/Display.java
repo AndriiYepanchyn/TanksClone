@@ -61,14 +61,16 @@ public abstract class Display {
 	}
 	
 	public static void render() {
+//		Here we draw the picture in buffer
 		int r = 50;
 		bufferGraphics.setColor(Color.BLUE);
 		bufferGraphics.fillOval((int)(CANVAS_WIDHT/2 - r + 200 * Math.sin(delta)),
 				(int)(CANVAS_HEIGHT/2 - r + 100 * Math.cos(delta)), 2*r, 2*r);
-		delta +=0.02;
+		delta +=0.05;
 	}
 	
 	public static void swapBuffers() {
+//		Here we swap image from buffer directly to the canvas and draw it
 		Graphics g = content.getGraphics();
 		g.drawImage(buffer, 0, 0, null );
 	}
