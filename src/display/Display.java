@@ -3,9 +3,17 @@ package display;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.util.Arrays;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.border.Border;
 
 
 
@@ -16,42 +24,58 @@ public abstract class Display {
 	private static int CANVAS_WIDHT;
 	private static int CANVAS_HEIGHT;
 	
-	public static void create(int width, int height, String title) {
+	private static BufferedImage buffer;
+	private static int[] bufferData;
+	private static Graphics bufferGraphics;
+	private static int clearColor;
+	private static double delta;
+	
+	public static void create(int width, int height, String title, int _clearColor) {
 		if(isCreated) return;
 		CANVAS_WIDHT = width;
 		CANVAS_HEIGHT = height;
+		clearColor = _clearColor;
 		
-		Dimension size = new Dimension(width, height);
-		content = new Canvas() {
-			@Override
-			public void paint(Graphics g) {
-//				Overriding paint is the worst way to draw dynamically changing objects
-//				This causes the blinking of redrawn objects
-				super.paint(g);
-				render (g);
-			}
-		};
+		Dimension size = new Dimension(CANVAS_WIDHT, CANVAS_HEIGHT);
+		content = new Canvas();
 		content.setPreferredSize(size);
-		content.setBackground(Color.BLACK);
 		
 		window = new JFrame(title);
-		window.getContentPane().add(content);
+		window.setPreferredSize(size);
+		window.getContentPane().add(content);		
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		window.setLocation((screenSize.width-width)/2, (screenSize.height - height)/2);
-		window.setResizable(false);
 		window.setVisible(true);
 		window.pack();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
-	public static void render() {
-		content.repaint();
+		
+//		ARGB - defines int format for storing point color
+		buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+//		Here we establish connection between buffer and bufferData. This connection is bidirectional		
+		bufferData = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
+		bufferGraphics = buffer.getGraphics();
+		
+		isCreated = true;
+	
 	}
 	
-	private static void render(Graphics g) {
+	public static void render() {
 		int r = 50;
-		g.setColor(Color.YELLOW);
-		g.fillOval(CANVAS_WIDHT/2-2*r, CANVAS_HEIGHT/2-2*r, 2*r, 2*r);
+		bufferGraphics.setColor(Color.BLUE);
+		bufferGraphics.fillOval((int)(CANVAS_WIDHT/2 - r + 200 * Math.sin(delta)),
+				(int)(CANVAS_HEIGHT/2 - r + 100 * Math.cos(delta)), 2*r, 2*r);
+		delta +=0.02;
 	}
+	
+	public static void swapBuffers() {
+		Graphics g = content.getGraphics();
+		g.drawImage(buffer, 0, 0, null );
+	}
+	
+	public static void clear() {
+		Arrays.fill(bufferData, clearColor);
+	}
+	
+	
 }
