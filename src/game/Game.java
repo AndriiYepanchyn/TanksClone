@@ -1,6 +1,10 @@
 package game;
 
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+
 import display.Display;
+import io.Input;
 import main.Time;
 
 public class Game implements Runnable {
@@ -13,6 +17,12 @@ public class Game implements Runnable {
 	public static final float REQUIRED_FPS = 60.0f; //UPDATE_RATE
 	public static final float TIME_PER_FRAME = Time.SECOND / REQUIRED_FPS; //UPDATE_INTERVAL
 	public static final long IDLE_TIME = 1;
+	
+	private static int speed = 3;
+	private static int x=350, y = 250, radius = 100;
+	private static Color ovalColor = Color.YELLOW;
+	
+	private Input input;
 
 	private boolean isRunning;
 	private Thread gameThread;
@@ -20,6 +30,8 @@ public class Game implements Runnable {
 	public Game() {
 		isRunning = false;
 		Display.create(WIDTH, HEIGHT, TITLE, _CLEAR_COLOR, NUM_BUFFERS);
+		input = new Input();
+		Display.addInputListener(input);
 	}
 
 	@Override
@@ -75,12 +87,25 @@ public class Game implements Runnable {
 	}
 
 	private void update() {
-
+		if(input.getKey(KeyEvent.VK_UP)) {
+			y -=speed;
+		}
+		if(input.getKey(KeyEvent.VK_DOWN)) {
+			y +=speed;
+		}
+		if(input.getKey(KeyEvent.VK_LEFT)) {
+			x -=speed;
+		}
+		if(input.getKey(KeyEvent.VK_RIGHT)) {
+			x +=speed;
+		}
+		
 	}
 
 	private void render() {
 		Display.clear();
-		
+		Display.getGraphics().setColor(ovalColor);
+		Display.getGraphics().fillOval(x - radius, y - radius, radius *2, radius *2);
 		Display.swapBuffers();
 	}
 

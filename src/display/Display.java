@@ -13,6 +13,8 @@ import java.util.Arrays;
 
 import javax.swing.JFrame;
 
+import io.Input;
+
 public abstract class Display {
 	private static boolean isCreated = false;
 	private static JFrame window;
@@ -85,6 +87,10 @@ public abstract class Display {
 	
 	public static void setTitle(String title) {
 		window.setTitle(title);
+	}
+	
+	public static void addInputListener(Input inputListener) {
+		window.add(inputListener);
 	}
 	
 }
