@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import display.Display;
+import graphics.Sprite;
+import graphics.SpriteSheet;
 import graphics.TextureAtlas;
 import io.Input;
 import main.Time;
@@ -19,27 +21,32 @@ public class Game implements Runnable {
 	public static final float TIME_PER_FRAME = Time.SECOND / REQUIRED_FPS; //UPDATE_INTERVAL
 	public static final long IDLE_TIME = 1;
 	
-	private static int SPEED = 3;
-	private static int X = 350, Y = 250;
+	private static int SPEED = 3,
+					   X = WIDTH / 2, 
+					   Y = HEIGHT / 2;
 	
 	public static final String ATLAS_FILE_NAME = "texture_atlas.png";
-	
 
 	private boolean isRunning;
 	private Thread gameThread;
 	private Graphics2D graphics;
 	private Input input;
 	private TextureAtlas atlas;
-	private static int ATLAS_SHIFT_K = 0;
+	
+	private SpriteSheet sheet;
+	private Sprite sprite;
 
 	public Game() {
 		isRunning = false;
 		Display.create(WIDTH, HEIGHT, TITLE, _CLEAR_COLOR, NUM_BUFFERS);
 		input = new Input();
 		Display.addInputListener(input);
+		
+		graphics = Display.getGraphics();
 		atlas = new TextureAtlas(ATLAS_FILE_NAME);
-		
-		
+		int scale = 16;
+		sheet = new SpriteSheet(atlas.cut(1 * scale, 9 * scale , scale, scale), 2, scale );
+		sprite = new Sprite(sheet, 3);
 	}
 
 	@Override
@@ -97,29 +104,26 @@ public class Game implements Runnable {
 	private void update() {
 		if(input.getKey(KeyEvent.VK_UP)) {
 			Y -=SPEED;
-			ATLAS_SHIFT_K = 0;
 			
 		}
 		if(input.getKey(KeyEvent.VK_DOWN)) {
 			Y +=SPEED;
-			ATLAS_SHIFT_K = 2;
 		}
 		if(input.getKey(KeyEvent.VK_LEFT)) {
 			X -=SPEED;
-			ATLAS_SHIFT_K = 1;
 		}
 		if(input.getKey(KeyEvent.VK_RIGHT)) {
 			X +=SPEED;
-			ATLAS_SHIFT_K = 3;
 		}
-		
+		if(input.getKey(KeyEvent.VK_R)) {
+			X = 200;
+			Y = 250;
+		}
 	}
 
 	private void render() {
 		Display.clear();
-//		Display.getGraphics().setColor(ovalColor);
-		Display.getGraphics().drawImage(atlas.cut(ATLAS_SHIFT_K * 32, 0, 16, 16), X, Y, null);
-		
+		sprite.render(graphics, X, Y);
 		Display.swapBuffers();
 	}
 
