@@ -23,6 +23,7 @@ public class Input extends JComponent{
 					KeyStroke.getKeyStroke(i,0, false),
 					i*2);
 			getActionMap().put(i*2, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -35,6 +36,7 @@ public class Input extends JComponent{
 					KeyStroke.getKeyStroke(i,0, true),
 					i*2 + 1);
 			getActionMap().put(i*2 +1, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void actionPerformed(ActionEvent e) {

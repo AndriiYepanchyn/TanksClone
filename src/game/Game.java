@@ -1,9 +1,10 @@
 package game;
 
-import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import display.Display;
+import graphics.TextureAtlas;
 import io.Input;
 import main.Time;
 
@@ -18,20 +19,27 @@ public class Game implements Runnable {
 	public static final float TIME_PER_FRAME = Time.SECOND / REQUIRED_FPS; //UPDATE_INTERVAL
 	public static final long IDLE_TIME = 1;
 	
-	private static int speed = 3;
-	private static int x=350, y = 250, radius = 100;
-	private static Color ovalColor = Color.YELLOW;
+	private static int SPEED = 3;
+	private static int X = 350, Y = 250;
 	
-	private Input input;
+	public static final String ATLAS_FILE_NAME = "texture_atlas.png";
+	
 
 	private boolean isRunning;
 	private Thread gameThread;
+	private Graphics2D graphics;
+	private Input input;
+	private TextureAtlas atlas;
+	private static int ATLAS_SHIFT_K = 0;
 
 	public Game() {
 		isRunning = false;
 		Display.create(WIDTH, HEIGHT, TITLE, _CLEAR_COLOR, NUM_BUFFERS);
 		input = new Input();
 		Display.addInputListener(input);
+		atlas = new TextureAtlas(ATLAS_FILE_NAME);
+		
+		
 	}
 
 	@Override
@@ -88,24 +96,30 @@ public class Game implements Runnable {
 
 	private void update() {
 		if(input.getKey(KeyEvent.VK_UP)) {
-			y -=speed;
+			Y -=SPEED;
+			ATLAS_SHIFT_K = 0;
+			
 		}
 		if(input.getKey(KeyEvent.VK_DOWN)) {
-			y +=speed;
+			Y +=SPEED;
+			ATLAS_SHIFT_K = 2;
 		}
 		if(input.getKey(KeyEvent.VK_LEFT)) {
-			x -=speed;
+			X -=SPEED;
+			ATLAS_SHIFT_K = 1;
 		}
 		if(input.getKey(KeyEvent.VK_RIGHT)) {
-			x +=speed;
+			X +=SPEED;
+			ATLAS_SHIFT_K = 3;
 		}
 		
 	}
 
 	private void render() {
 		Display.clear();
-		Display.getGraphics().setColor(ovalColor);
-		Display.getGraphics().fillOval(x - radius, y - radius, radius *2, radius *2);
+//		Display.getGraphics().setColor(ovalColor);
+		Display.getGraphics().drawImage(atlas.cut(ATLAS_SHIFT_K * 32, 0, 16, 16), X, Y, null);
+		
 		Display.swapBuffers();
 	}
 
